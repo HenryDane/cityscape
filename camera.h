@@ -1,11 +1,15 @@
+#ifndef CAMERA_H
+#define CAMERA_H 1
+
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
 #include <cmath>
 #include "main.h"
+#include <GL/glu.h>
 
 #define M_PI 3.14159265359
 
-void gluPerspective(double fovy,double aspect, double zNear, double zFar)
+/*void gluPerspective(double fovy,double aspect, double zNear, double zFar)
 {
     // Start in projection mode.
     glMatrixMode(GL_PROJECTION);
@@ -16,7 +20,7 @@ void gluPerspective(double fovy,double aspect, double zNear, double zFar)
     xmin = ymin * aspect;
     xmax = ymax * aspect;
     glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
-}
+}*/
 
 class EulerCamera {
 public:
@@ -50,11 +54,11 @@ public:
         this->aspectRatio = aspectRatio;
     }
     void setFarClippingPane(float farClippingPane) {
-        if (farClippingPane <= 0) farClippingPane = 1;
+        if (farClippingPane <= 0) farClippingPane = 100;
         this->zFar = farClippingPane;
     }
     void setNearClippingPane(float nearClippingPane) {
-        if (nearClippingPane <= 0) nearClippingPane = 100;
+        if (nearClippingPane <= 0) nearClippingPane = 0.001;
         this->zNear = nearClippingPane;
     }
     void setRotation(float pitch, float yaw, float roll) {
@@ -83,6 +87,15 @@ public:
         glRotatef(yaw, 0.0f, 1.0f, 0.0f);
         glRotatef(roll, 0.0f, 0.0f, 1.0f);
         glTranslatef(-x, -y, -z);
+        glPopAttrib();
+    }
+    void applyNTranslations() {
+        glPushAttrib(GL_TRANSFORM_BIT);
+        glMatrixMode(GL_MODELVIEW);
+        glRotatef(pitch, 1.0f, 0.0f, 0.0f);
+        glRotatef(yaw, 0.0f, 1.0f, 0.0f);
+        glRotatef(roll, 0.0f, 0.0f, 1.0f);
+        //glTranslatef(-x, -y, -z);
         glPopAttrib();
     }
     void applyOrthographicMatrix() {
@@ -331,3 +344,4 @@ public:
     }
 };
 
+#endif // CAMERA_H
